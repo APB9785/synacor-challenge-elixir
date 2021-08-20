@@ -4,7 +4,8 @@ defmodule Synacor.State do
             stack: [],
             address: 0,
             halt: false,
-            output: []
+            output: [],
+            input: []
 
   def init(attrs) do
     struct!(__MODULE__, attrs)

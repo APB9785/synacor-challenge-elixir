@@ -196,11 +196,17 @@ defmodule SynacorTest do
   end
 
   test "output/1" do
-    s = state_fixture([19, 97])
-    assert capture_io(fn -> Machine.output(s) end) == "a\n"
-    s = state_fixture([19, 32770])
+    s = state_fixture([19, 97, 19, 32770, 19, 10])
     s = Map.update!(s, :registers, &Map.put(&1, 2, 99))
-    assert capture_io(fn -> Machine.output(s) end) == "c\n"
+    res = Machine.output(s)
+    assert res.output == [[], 97]
+    assert res.address == 2
+
+    res = Machine.output(res)
+    assert res.output == [[[], 97], 99]
+    assert res.address == 4
+
+    assert capture_io(fn -> Machine.output(res) end) == "ac\n"
   end
 
   test "no_op/1" do

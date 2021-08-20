@@ -291,8 +291,19 @@ defmodule Synacor.Machine do
   encountered; this means that you can safely read whole lines from the keyboard
   and trust that they will be fully read
   """
-  def input(%State{} = state) do
-    nil
+  def input(%State{memory: memory, address: address} = state) do
+    dest = Map.fetch!(memory, address + 1) - 32768
+
+    [h | rest] =
+      case state.input do
+        [] -> IO.gets("> ") |> String.to_charlist()
+        xs -> xs
+      end
+
+    state
+    |> Map.update!(:registers, &Map.put(&1, dest, h))
+    |> Map.put(:input, rest)
+    |> Map.update!(:address, &(&1 + 2))
   end
 
   @doc """
